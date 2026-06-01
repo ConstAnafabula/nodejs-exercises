@@ -1,0 +1,1 @@
+console.log(`Current File Path: ${__filename}`);
