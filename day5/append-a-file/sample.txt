@@ -1,0 +1,5 @@
+This is the original content
+
+This adds a new line synchronously
+
+This adds a new line asynchronously
