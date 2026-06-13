@@ -119,7 +119,6 @@ app.get('/search-user', (req, res) => {
 //3. View single user
 app.get('/user', (req, res) => {
     const name = req.query.name
-    
     const userFind = userInfos.find(u => u.name === name)
         if (userFind) {
             return res.send(`
