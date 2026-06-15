@@ -414,7 +414,7 @@ app.get('/dashboard', checkAuth, (req, res) => {
                             <div class="card">
                                 <h3>✏️ Update Product</h3>
                                 <p>Edit product details</p>
-                                <a class="btn" href="/update-product">Edit</a>
+                                <a class="btn" href="/dashboard/search-product">Edit</a>
                             </div>
                             <div class="card">
                                 <h3>🗑️ Delete Product</h3>
@@ -647,6 +647,233 @@ app.get('/dashboard/products', checkAuth, (req, res) => {
                     </html>
                     `
     res.send(allProducts)
+})
+app.get('/dashboard/search-product', checkAuth, (req, res) => {
+    const searchProduct = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Update Product</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    margin: 0;
+                                    background: #f4f6f8;
+                                }
+                                .header {
+                                    background: #2c3e50;
+                                    color: white;
+                                    padding: 20px;
+                                    text-align: center;
+                                }
+                                .container {
+                                    max-width: 600px;
+                                    margin: 40px auto;
+                                    padding: 20px;
+                                }
+                                .card {
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                }
+                                h2 {
+                                    text-align: center;
+                                    color: #2c3e50;
+                                    margin-bottom: 25px;
+                                }
+                                label {
+                                    display: block;
+                                    margin-top: 15px;
+                                    margin-bottom: 5px;
+                                    font-weight: bold;
+                                }
+                                input {
+                                    width: 100%;
+                                    padding: 10px;
+                                    box-sizing: border-box;
+                                    border: 1px solid #ccc;
+                                    border-radius: 5px;
+                                }
+                                .btn-group {
+                                    margin-top: 25px;
+                                    text-align: center;
+                                }
+                                .btn {
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    text-decoration: none;
+                                    cursor: pointer;
+                                    font-size: 15px;
+                                }
+                                .btn-update {
+                                    background: #f39c12;
+                                    color: white;
+                                }
+                                .btn-update:hover {
+                                    background: #d68910;
+                                }
+                                .btn-back {
+                                    background: #2c3e50;
+                                    color: white;
+                                    margin-left: 10px;
+                                }
+                                .btn-back:hover {
+                                    background: #1a242f;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>📦 Simple Inventory Management System</h1>
+                            </div>
+                            <div class="container">
+                                <div class="card">
+                                    <h2>✏️ Search Product</h2>
+                                    <form action="/dashboard/update-product" method="get">
+                                        <label>Product ID</label>
+                                        <input type="number" name="id" placeholder="Enter product ID" required>
+                                        <div class="btn-group">
+                                            <button class="btn btn-update" type="submit">Find Product</button>
+                                            <a class="btn btn-back" href="/dashboard">Back</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(searchProduct)
+})
+app.get('/dashboard/update-product', checkAuth, (req, res) => {
+    const id = Number(req.query.id)
+    const product = products.find(product => product.id === id)
+    const updateProduct = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Update Product</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    margin: 0;
+                                    background: #f4f6f8;
+                                }
+                                .header {
+                                    background: #2c3e50;
+                                    color: white;
+                                    padding: 20px;
+                                    text-align: center;
+                                }
+                                .container {
+                                    max-width: 600px;
+                                    margin: 40px auto;
+                                    padding: 20px;
+                                }
+                                .card {
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                }
+                                h2 {
+                                    text-align: center;
+                                    color: #2c3e50;
+                                    margin-bottom: 25px;
+                                }
+                                label {
+                                    display: block;
+                                    margin-top: 15px;
+                                    margin-bottom: 5px;
+                                    font-weight: bold;
+                                }
+                                input {
+                                    width: 100%;
+                                    padding: 10px;
+                                    box-sizing: border-box;
+                                    border: 1px solid #ccc;
+                                    border-radius: 5px;
+                                }
+                                .btn-group {
+                                    margin-top: 25px;
+                                    text-align: center;
+                                }
+                                .btn {
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    text-decoration: none;
+                                    cursor: pointer;
+                                    font-size: 15px;
+                                }
+                                .btn-update {
+                                    background: #f39c12;
+                                    color: white;
+                                }
+                                .btn-update:hover {
+                                    background: #d68910;
+                                }
+                                .btn-back {
+                                    background: #2c3e50;
+                                    color: white;
+                                    margin-left: 10px;
+                                }
+                                .btn-back:hover {
+                                    background: #1a242f;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>📦 Simple Inventory Management System</h1>
+                            </div>
+                            <div class="container">
+                                <div class="card">
+                                    <h2>✏️ Update Product</h2>
+                                    <form action="/dashboard/update-product" method="post">
+                                        <label>Product ID</label>
+                                        <input type="number" name="id" value="${product.id}" readOnly>
+                                        <label>Product Name</label>
+                                        <input type="text" name="productName" placeholder="Enter updated product name [Current name: ${product.productName}]" required>
+                                        <label>Category</label>
+                                        <input type="text" name="category" placeholder="Enter updated category [Current category: ${product.category}]" required>
+                                        <label>Price</label>
+                                        <input type="number" name="price" placeholder="Enter updated price [Current price: ${product.price}]" required>
+                                        <label>Quantity</label>
+                                        <input type="number" name="quantity" placeholder="Enter updated quantity [Current quantity: ${product.quantity}]" required>
+                                        <div class="btn-group">
+                                            <button class="btn btn-update" type="submit">Update Product</button>
+                                            <a class="btn btn-back" href="/dashboard/search-product">Back</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(updateProduct)
+})
+app.post('/dashboard/update-product', checkAuth, (req, res) => {
+    const id = Number(req.body.id)
+    const updatedProduct = {
+        productName: req.body.productName,
+        category: req.body.category,
+        price: Number(req.body.price),
+        quantity: Number(req.body.quantity)
+    }
+    const i = products.findIndex(product => product.id === id)
+    
+    if (i !== -1) {
+        products[i] = {
+        id: id,
+        productName: req.body.productName,
+        category: req.body.category,
+        price: Number(req.body.price),
+        quantity: Number(req.body.quantity)
+        }
+    }
+    res.redirect('/dashboard')
 })
 app.listen(3000, () => {
     console.log('Server Status: 🟢 Running')
