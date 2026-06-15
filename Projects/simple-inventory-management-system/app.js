@@ -200,7 +200,7 @@ app.get('/', (req, res) => {
     `
     res.send(homepage)
 })
-app.get('/login', (req, res) => {
+app.get('/login', checkGuest, (req, res) => {
     const loginPage = `
                 <!DOCTYPE html>
                 <html>
@@ -419,7 +419,7 @@ app.get('/dashboard', checkAuth, (req, res) => {
                             <div class="card">
                                 <h3>🗑️ Delete Product</h3>
                                 <p>Remove items from inventory</p>
-                                <a class="btn" href="/delete-product">Delete</a>
+                                <a class="btn" href="/dashboard/delete-product">Delete</a>
                             </div>
                         </div>
                     </div>
@@ -540,7 +540,7 @@ app.post('/dashboard/add-product', checkAuth, (req, res) => {
         price: Number(req.body.price),
         quantity: Number(req.body.quantity)
     })
-    res.redirect('/dashboard/add-product')
+    res.redirect('/dashboard/products')
 })
 app.get('/dashboard/products', checkAuth, (req, res) => {
     const rows = products.map(product => `
@@ -873,7 +873,145 @@ app.post('/dashboard/update-product', checkAuth, (req, res) => {
         quantity: Number(req.body.quantity)
         }
     }
-    res.redirect('/dashboard')
+    res.redirect('/dashboard/products')
+})
+app.get('/dashboard/delete-product', checkAuth, (req, res) => {
+    const deleteProduct = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Delete Product</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    margin: 0;
+                                    background: #f4f6f8;
+                                }
+                                .header {
+                                    background: #2c3e50;
+                                    color: white;
+                                    padding: 20px;
+                                    text-align: center;
+                                }
+                                .container {
+                                    max-width: 500px;
+                                    margin: 40px auto;
+                                    padding: 20px;
+                                }
+                                .card {
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                }
+                                h2 {
+                                    text-align: center; 
+                                    color: #2c3e50;
+                                    margin-bottom: 10px;
+                                }
+                                .warning {
+                                    text-align: center;
+                                    color: #e74c3c;
+                                    margin-bottom: 25px;
+                                }
+                                label {
+                                    display: block;
+                                    margin-bottom: 5px;
+                                    font-weight: bold;
+                                }
+                                input {
+                                    width: 100%;
+                                    padding: 10px;
+                                    box-sizing: border-box;
+                                    border: 1px solid #ccc;
+                                    border-radius: 5px;
+                                }
+                                .btn-group {
+                                    margin-top: 25px;
+                                    text-align: center;
+                                }
+                                .btn {
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    text-decoration: none;
+                                    cursor: pointer;
+                                    font-size: 15px;
+                                }
+                                .btn-delete {
+                                    background: #e74c3c;
+                                    color: white;
+                                }
+                                .btn-delete:hover {
+                                    background: #c0392b;
+                                }
+                                .btn-back {
+                                    background: #2c3e50;
+                                    color: white;
+                                    margin-left: 10px;
+                                }
+                                .btn-back:hover {
+                                    background: #1a242f;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>📦 Simple Inventory Management System</h1>
+                            </div>
+                            <div class="container">
+                                <div class="card">
+                                    <h2>🗑️ Delete Product</h2>
+                                    <p class="warning">This action cannot be undone.</p>
+                                    <form action="/dashboard/delete-product" method="POST">
+                                        <label>Product ID</label>
+                                        <input type="number" name="id" placeholder="Enter product ID" required>
+                                        <div class="btn-group">
+                                            <button class="btn btn-delete" type="submit">Delete Product</button>
+                                            <a class="btn btn-back" href="/dashboard">Back</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(deleteProduct)
+})
+app.post('/dashboard/delete-product', checkAuth, (req, res) => {
+    const id = req.body.id
+    const confimation = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Confirm Delete</title>
+                        </head>
+                        <body style="font-family: Arial; text-align:center; padding:50px; background:#f4f6f8;">
+                            <div style="background:white; padding:40px; border-radius:10px; display:inline-block; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                                <h2 style="color:#2c3e50;">⚠️ Confirm Delete</h2>
+                                <p>Are you sure you want to delete product ID:<b> ${id}</b>?</p>
+                                <form method="POST" action="/dashboard/delete-product/confirm" style="margin-top:20px;">
+                                    <input type="hidden" name="id" value="${id}">
+                                    <button type="submit" style="padding:10px 20px; background:#e74c3c; color:white; border:none; border-radius:5px; cursor:pointer; margin-right:10px;">Yes, Delete</button>
+                                    <a href="/dashboard" style="padding:10px 20px; background:#2c3e50; color:white; text-decoration:none; border-radius:5px; display:inline-block;">Cancel</a>
+                                </form>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(confimation)
+})
+app.post('/dashboard/delete-product/confirm', checkAuth, (req, res) => {
+    const id = Number(req.body.id)
+    const i = products.findIndex(product => product.id === id)
+    if (i !== -1) {
+        products.splice(i, 1)
+    }
+    res.redirect('/dashboard/products')
+})
+app.get('/logout', checkAuth, (req, res) => {
+    loggedIn = false
+    res.redirect('/login')
 })
 app.listen(3000, () => {
     console.log('Server Status: 🟢 Running')
