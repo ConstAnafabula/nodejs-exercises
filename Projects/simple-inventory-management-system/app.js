@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 let loggedIn = false
+let isSearching = false
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -22,7 +23,6 @@ function checkGuest(req, res, next) {
     }
     next()
 }
-
 const products = [
     {
         id: 1,
@@ -308,10 +308,19 @@ app.get('/login', checkGuest, (req, res) => {
 app.post('/login', checkGuest, (req, res) => {
     const name = req.body.username
     const password = req.body.password
-
+    const loginFailed = `
+                        <div style="max-width: 420px; margin: 80px auto; padding: 24px; text-align: center; background: #fff5f5; border: 1px solid #ffcccc; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); font-family: Arial, sans-serif;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">❌</div>
+                        <h2 style="color:#d63031; margin: 0 0 10px;">Invalid credentials</h2>
+                        <p style="color:#555; margin-bottom: 20px;">The username or password you entered is incorrect.</p>
+                        <a href="/login" style="display: inline-block; padding: 10px 18px; background: #d63031; color: white; text-decoration: none; border-radius: 8px; transition: 0.2s; font-weight: bold;" onmouseover="this.style.background='#b71c1c'" onmouseout="this.style.background='#d63031'">Try again</a>
+                        </div>
+    `
     if (name === "admin" && password === "admin123") {
         loggedIn = true
         res.redirect('/dashboard')
+    } else {
+        res.send(loginFailed)
     }
 })
 app.get('/dashboard', checkAuth, (req, res) => {
@@ -414,12 +423,17 @@ app.get('/dashboard', checkAuth, (req, res) => {
                             <div class="card">
                                 <h3>✏️ Update Product</h3>
                                 <p>Edit product details</p>
-                                <a class="btn" href="/dashboard/search-product">Edit</a>
+                                <a class="btn" href="/dashboard/search-product?action=update">Edit</a>
                             </div>
                             <div class="card">
                                 <h3>🗑️ Delete Product</h3>
                                 <p>Remove items from inventory</p>
                                 <a class="btn" href="/dashboard/delete-product">Delete</a>
+                            </div>
+                            <div class="card">
+                                <h3>🔎 Search Product</h3>
+                                <p>Find items in inventory</p>
+                                <a class="btn" href="/dashboard/search-product?action=search">Search</a>
                             </div>
                         </div>
                     </div>
@@ -649,6 +663,7 @@ app.get('/dashboard/products', checkAuth, (req, res) => {
     res.send(allProducts)
 })
 app.get('/dashboard/search-product', checkAuth, (req, res) => {
+    const action = req.query.action
     const searchProduct = `
                         <!DOCTYPE html>
                         <html>
@@ -731,9 +746,10 @@ app.get('/dashboard/search-product', checkAuth, (req, res) => {
                             <div class="container">
                                 <div class="card">
                                     <h2>✏️ Search Product</h2>
-                                    <form action="/dashboard/update-product" method="get">
+                                    <form action="/dashboard/search-product/confirmation" method="get">
                                         <label>Product ID</label>
                                         <input type="number" name="id" placeholder="Enter product ID" required>
+                                        <input type="hidden" name="action" value=${action}>
                                         <div class="btn-group">
                                             <button class="btn btn-update" type="submit">Find Product</button>
                                             <a class="btn btn-back" href="/dashboard">Back</a>
@@ -745,6 +761,143 @@ app.get('/dashboard/search-product', checkAuth, (req, res) => {
                         </html>
     `
     res.send(searchProduct)
+})
+app.get('/dashboard/search-product/confirmation', checkAuth, (req, res) => {
+    const action = req.query.action
+    const id = Number(req.query.id)
+    const product = products.find(product => product.id === id)
+    if (product) {
+        res.redirect(`/dashboard/found-product?id=${id}&action=${action}`)   
+    } else {
+        res.redirect('/dashboard/product-not-found')
+    }
+})
+app.get('/dashboard/found-product', checkAuth, (req, res) => {
+    const action = req.query.action
+    const id = Number(req.query.id)
+    const product = products.find(product => product.id === id)
+    const destination = action === 'update' ? `/dashboard/update-product?id=${product.id}` : `/dashboard/product/${id}`
+    const productFound = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Product Found</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    background: #f4f6f8;
+                                    margin: 0;
+                                }
+                                .container {
+                                    max-width: 600px;
+                                    margin: 60px auto;
+                                }
+                                .card {
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                }
+                                h2 {
+                                    color: #27ae60;
+                                    text-align: center;
+                                }
+                                .info {
+                                    margin: 15px 0;
+                                    font-size: 18px;
+                                }
+                                .btn-group {
+                                    text-align: center;
+                                    margin-top: 25px;
+                                }
+                                .btn {
+                                    display: inline-block;
+                                    padding: 10px 20px;
+                                    text-decoration: none;
+                                    color: white;
+                                    border-radius: 5px;
+                                    margin: 0 5px;
+                                }
+                                .view { background: #ffffff; }
+                                .edit { background: #f39c12; }
+                                .back { background: #2c3e50; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <div class="card">
+                                    <h2>✅ Product Found</h2>
+                                    <div class="info"><b>ID:</b> ${product.id}</div>
+                                    <div class="btn-group">
+                                        <a href="/dashboard/products" class="btn back">Back</a>
+                                        <a href="${destination}" class="btn edit">Continue</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(productFound)
+})
+app.get('/dashboard/product-not-found', checkAuth, (req, res) => {
+    const productNotFound = `
+                            <!DOCTYPE html>
+                            <html>
+                            <head>
+                                <title>Product Not Found</title>
+                                <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        background: #f4f6f8;
+                                        margin: 0;
+                                    }
+                                    .container {
+                                        max-width: 500px;
+                                        margin: 80px auto;
+                                    }
+                                    .card {
+                                        background: white;
+                                        padding: 35px;
+                                        text-align: center;
+                                        border-radius: 10px;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                    }
+                                    h2 {
+                                        color: #e74c3c;
+                                    }
+                                    p {
+                                        color: #666;
+                                        margin-bottom: 25px;
+                                    }
+                                    .btn {
+                                        display: inline-block;
+                                        padding: 10px 20px;
+                                        text-decoration: none;
+                                        color: white;
+                                        border-radius: 5px;
+                                        margin: 0 5px;
+                                    }
+                                    .search {
+                                        background: #3498db;
+                                    }
+                                    .dashboard {
+                                        background: #2c3e50;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="container">
+                                    <div class="card">
+                                        <h2>❌ Product Not Found</h2>
+                                        <p>No product exists with the provided ID.</p>
+                                        <a href="/dashboard/products" class="btn search">View Products</a>
+                                        <a href="/dashboard" class="btn dashboard">Dashboard</a>
+                                    </div>
+                                </div>
+                            </body>
+                            </html>
+    `
+    res.send(productNotFound)
 })
 app.get('/dashboard/update-product', checkAuth, (req, res) => {
     const id = Number(req.query.id)
@@ -876,7 +1029,9 @@ app.post('/dashboard/update-product', checkAuth, (req, res) => {
     res.redirect('/dashboard/products')
 })
 app.get('/dashboard/delete-product', checkAuth, (req, res) => {
+    const id = Number(req.query.id)
     const deleteProduct = `
+
                         <!DOCTYPE html>
                         <html>
                         <head>
@@ -965,7 +1120,7 @@ app.get('/dashboard/delete-product', checkAuth, (req, res) => {
                                     <p class="warning">This action cannot be undone.</p>
                                     <form action="/dashboard/delete-product" method="POST">
                                         <label>Product ID</label>
-                                        <input type="number" name="id" placeholder="Enter product ID" required>
+                                        <input type="number" name="id" value="${id || ''}" placeholder="Enter product ID" required>
                                         <div class="btn-group">
                                             <button class="btn btn-delete" type="submit">Delete Product</button>
                                             <a class="btn btn-back" href="/dashboard">Back</a>
@@ -1009,6 +1164,150 @@ app.post('/dashboard/delete-product/confirm', checkAuth, (req, res) => {
     }
     res.redirect('/dashboard/products')
 })
+app.get('/dashboard/product/:id', checkAuth, (req, res) => {
+    const id = Number(req.params.id)
+    const product = products.find(product => product.id === id)
+    const productDetails = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Product Details</title>
+                            <style>
+                                body {
+                                    margin: 0;
+                                    font-family: Arial, sans-serif;
+                                    background: #f4f6f8;
+                                }
+                                .hero {
+                                    background: #2c3e50;
+                                    color: white;
+                                    padding: 40px;
+                                    text-align: center;
+                                }
+                                .hero h1 {
+                                    margin: 0;
+                                    font-size: 36px;
+                                }
+                                .hero p {
+                                    margin-top: 10px;
+                                    opacity: 0.8;
+                                }
+                                .container {
+                                    max-width: 900px;
+                                    margin: -30px auto 40px;
+                                    padding: 20px;
+                                }
+                                .product-card {
+                                    background: white;
+                                    border-radius: 12px;
+                                    padding: 30px;
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                                }
+                                .product-header {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    margin-bottom: 30px;
+                                }
+                                .product-name {
+                                    font-size: 28px;
+                                    font-weight: bold;
+                                    color: #2c3e50;
+                                }
+                                .product-id {
+                                    background: #ecf0f1;
+                                    padding: 8px 15px;
+                                    border-radius: 20px;
+                                    font-weight: bold;
+                                }
+                                .details-grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(2, 1fr);
+                                    gap: 20px;
+                                }
+                                .detail-box {
+                                    background: #f8f9fa;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                }
+                                .detail-label {
+                                    color: #777;
+                                    font-size: 14px;
+                                    margin-bottom: 8px;
+                                }
+                                .detail-value {
+                                    font-size: 22px;
+                                    font-weight: bold;
+                                    color: #2c3e50;
+                                }
+                                .actions {
+                                    margin-top: 30px;
+                                    text-align: center;
+                                }
+                                .btn {
+                                    display: inline-block;
+                                    padding: 12px 22px;
+                                    border-radius: 6px;
+                                    text-decoration: none;
+                                    color: white;
+                                    margin: 0 5px;
+                                    font-weight: bold;
+                                }
+                                .btn-back {
+                                    background: #2c3e50;
+                                }
+                                .btn-edit {
+                                    background: #f39c12;
+                                }
+                                .btn-delete {
+                                    background: #e74c3c;
+                                }
+                                .btn:hover {
+                                    opacity: 0.9;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="hero">
+                                <h1>${product.productName}</h1>
+                                <p>Product Information</p>
+                            </div>
+                            <div class="container">
+                                <div class="product-card">
+                                    <div class="product-header">
+                                        <div class="product-name">${product.productName}</div>
+                                        <div class="product-id">ID #${product.id}</div>
+                                    </div>
+                                    <div class="details-grid">
+                                        <div class="detail-box">
+                                            <div class="detail-label">Category</div>
+                                            <div class="detail-value">${product.category}</div>
+                                        </div>
+                                        <div class="detail-box">
+                                            <div class="detail-label">Price</div>
+                                            <div class="detail-value">₱${product.price}</div>
+                                        </div>
+                                        <div class="detail-box">
+                                            <div class="detail-label">Quantity</div>
+                                            <div class="detail-value">${product.quantity}</div>
+                                        </div>
+                                        <div class="detail-box">
+                                            <div class="detail-label">Status</div>
+                                            <div class="detail-value">${product.quantity > 0 ? '🟢 In Stock' : '🔴 Out of Stock'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="actions">
+                                        <a href="/dashboard/products" class="btn btn-back">← Products</a>
+                                        <a href="/dashboard/update-product?id=${product.id}" class="btn btn-edit">✏️ Edit</a>
+                                        <a href="/dashboard/delete-product?id=${product.id}" class="btn btn-delete">🗑️ Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+    `
+    res.send(productDetails)
+}) 
 app.get('/logout', checkAuth, (req, res) => {
     loggedIn = false
     res.redirect('/login')
