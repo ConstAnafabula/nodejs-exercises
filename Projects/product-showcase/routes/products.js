@@ -73,8 +73,21 @@ const productPage = `
                 </body>
                 </html>
                 `
-const products = [{ id: 1, icon: '💻', name: 'Laptop', price: 799, description: 'A high-performance laptop designed for students, professionals, and everyday users.', brand: 'Dell', processor: 'Intel Core i7', ram: '16GB', storage: '512GB SSD', stock: 15, category: 'Electronics' }, { id: 2, icon: '📱', name: 'Smartphone', price: 599, description: 'Latest smartphone with an amazing camera and fast performance.', brand: 'Samsung', processor: 'Snapdragon 8 Gen 3', ram: '12GB', storage: '256GB', stock: 20, category: 'Electronics' }, { id: 3, icon: '🎧', name: 'Headphones', price: 149, description: 'Wireless noise-cancelling headphones for music and calls.', brand: 'Sony', processor: 'N/A', ram: 'N/A', storage: 'N/A', stock: 42, category: 'Accessories' }, { id: 4, icon: '⌚', name: 'Smart Watch', price: 199, description: 'Track fitness, heart rate, and notifications on the go.', brand: 'Apple', processor: 'S9 Chip', ram: '2GB', storage: '64GB', stock: 18, category: 'Wearables' } ];
-const reviews = [{ id: 1, reviewer: "John Doe", rating: '★★★★★', date: "June 15, 2026", text: "Excellent laptop for programming and school work. Battery life is great and performance is smooth." }, { id: 1, reviewer: "Jane Smith", rating: '★★★★☆', date: "June 10, 2026", text: "Good value for the price. The screen is sharp and the keyboard feels comfortable to type on." }, { id: 1, reviewer: "Mike Johnson", rating: '★★★★★', date: "June 8, 2026", text: "Fast boot times and handles multiple applications without any issues. Highly recommended." }, { id: 2, reviewer: "Alex Carter", rating: '★★★★★', date: "June 12, 2026", text: "Amazing camera quality and super fast performance. Best phone I’ve used so far." }, { id: 2, reviewer: "Sarah Lee", rating: '★★★★☆', date: "June 9, 2026", text: "Very smooth experience, but battery could last a bit longer." }, { id: 3, reviewer: "Chris Evans", rating: '★★★★★', date: "June 5, 2026", text: "Sound quality is top-notch and noise cancellation works perfectly." }, { id: 4, reviewer: "Emma Watson", rating: '★★★★★', date: "June 3, 2026", text: "Great fitness tracking features and very comfortable to wear all day." }];
+const products = [
+    { id: 1, icon: '💻', name: 'Laptop', price: 799, description: 'A high-performance laptop designed for students, professionals, and everyday users.', brand: 'Dell', processor: 'Intel Core i7', ram: '16GB', storage: '512GB SSD', stock: 15, category: 'Electronics' },
+    { id: 2, icon: '📱', name: 'Smartphone', price: 599, description: 'Latest smartphone with an amazing camera and fast performance.', brand: 'Samsung', processor: 'Snapdragon 8 Gen 3', ram: '12GB', storage: '256GB', stock: 20, category: 'Electronics' },
+    { id: 3, icon: '🎧', name: 'Headphones', price: 149, description: 'Wireless noise-cancelling headphones for music and calls.', brand: 'Sony', processor: 'N/A', ram: 'N/A', storage: 'N/A', stock: 42, category: 'Accessories' },
+    { id: 4, icon: '⌚', name: 'Smart Watch', price: 199, description: 'Track fitness, heart rate, and notifications on the go.', brand: 'Apple', processor: 'S9 Chip', ram: '2GB', storage: '64GB', stock: 18, category: 'Wearables' } 
+];
+const reviews = [
+    { id: 1, reviewer: "John Doe", rating: '★★★★★', date: "June 15, 2026", text: "Excellent laptop for programming and school work. Battery life is great and performance is smooth." },
+    { id: 1, reviewer: "Jane Smith", rating: '★★★★☆', date: "June 10, 2026", text: "Good value for the price. The screen is sharp and the keyboard feels comfortable to type on." },
+    { id: 1, reviewer: "Mike Johnson", rating: '★★★★★', date: "June 8, 2026", text: "Fast boot times and handles multiple applications without any issues. Highly recommended." },
+    { id: 2, reviewer: "Alex Carter", rating: '★★★★★', date: "June 12, 2026", text: "Amazing camera quality and super fast performance. Best phone I’ve used so far." },
+    { id: 2, reviewer: "Sarah Lee", rating: '★★★★☆', date: "June 9, 2026", text: "Very smooth experience, but battery could last a bit longer." },
+    { id: 3, reviewer: "Chris Evans", rating: '★★★★★', date: "June 5, 2026", text: "Sound quality is top-notch and noise cancellation works perfectly." },
+    { id: 4, reviewer: "Emma Watson", rating: '★★★★★', date: "June 3, 2026", text: "Great fitness tracking features and very comfortable to wear all day." }
+];
 router.use((req, res, next) => {
     console.log(req.method);
     console.log(req.url);
