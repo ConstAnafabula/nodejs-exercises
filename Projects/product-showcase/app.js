@@ -1,13 +1,14 @@
 const express = require('express')
 const app = express()
-const productRouter = require('./routes/products')
+const {router: productRouter} = require('./routes/products')
 const userRouter = require('./routes/users')
-
+const categoryRouter = require('./routes/categories')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/products', productRouter)
 app.use('/users', userRouter)
+app.use('/categories', categoryRouter)
 const homepage = `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -41,6 +42,7 @@ const homepage = `
                     <p>Explore a simple catalog of products with full specifications and detailed views. Built using Express, HTML, and clean routing structure.</p>
                     <a href="/products" class="btn btn-primary">Browse Products</a>
                     <a href="/users" class="btn btn-primary">Browse Users</a>
+                    <a href="/categories" class="btn btn-primary">Browse Categories</a>
                 </div>
                 <div class="section">
                     <h2>What You Can Explore</h2>
