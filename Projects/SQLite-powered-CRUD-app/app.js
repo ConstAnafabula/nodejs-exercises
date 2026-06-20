@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const productsRouter = require('./router/products')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -8,6 +9,8 @@ app.use((req, res, next) => {
     console.log(req.url);
     next()
 })
+app.use('/products', productsRouter)
+
 app.get('/', (req, res) => {
     const homepage = `
         <!DOCTYPE html>
@@ -56,10 +59,7 @@ app.get('/', (req, res) => {
             <div class="logo">SQLite CRUD Manager</div>
             <nav>
             <a href="#">Home</a>
-            <a href="/read">View</a>
-            <a href="/create">Add</a>
-            <a href="/update">Edit</a>
-            <a href="/delete">Delete</a>
+            <a href="/products">Products</a>
             </nav>
             <a class="nav-cta" href="/read">Go to Dashboard</a>
         </header>
