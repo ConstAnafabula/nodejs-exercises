@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
                 <td>${product.price}</td>
                 <td>
                 <div class="actions">
-                    <a href="/update/1" class="edit-btn">Edit</a>
+                    <a href="/products/${product.productID}/update" class="edit-btn">Edit</a>
                     <a href="/delete/1" class="delete-btn">Delete</a>
                     </div>
                 </td>
@@ -153,6 +153,99 @@ router.post('/new', (req, res) => {
             return;
         }
         console.log('Inserted row ID:', this.lastID);
+        res.redirect('/products')
+    })
+})
+router.get('/:id/update', (req, res) => {
+    const id = Number(req.params.id)
+    const query = `SELECT * FROM products WHERE productID = ${id}`
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).send('Database Error')
+        }
+        const product = rows.map(p => {
+            return `
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" name="productName" value="${p.productName}" required>
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" name="price" value="${p.price}" required>
+            </div>          
+            `
+        }).join('')
+        const updatePage = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Update Product</title>
+            <style>
+            body { background:#f5f7fb; color:#1f2937; line-height:1.6; font-family:Arial,sans-serif; }
+            header { background:#fff; padding:15px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e5e7eb; position:sticky; top:0; }
+            .logo { font-weight:bold; font-size:18px; color:#2563eb; text-decoration:none; }
+            nav a { margin:0 10px; text-decoration:none; color:#1f2937; font-size:14px; }
+            nav a:hover { color:#2563eb; }
+            .btn-primary { background:#2563eb; color:#fff; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:13px; }
+            .container { max-width:600px; margin:40px auto; padding:0 20px; }
+            .page-title { font-size:24px; margin-bottom:5px; }
+            .subtitle { color:#6b7280; margin-bottom:20px; }
+            .form-box { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; }
+            .product-id { color:#6b7280; font-size:13px; margin-bottom:20px; }
+            .form-group { margin-bottom:15px; }
+            label { display:block; margin-bottom:6px; font-size:14px; color:#374151; }
+            input { width:100%; padding:10px; border:1px solid #e5e7eb; border-radius:6px; font-size:14px; }
+            input:focus { outline:none; border-color:#2563eb; }
+            .actions { display:flex; gap:10px; margin-top:20px; }
+            .save-btn { flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:6px; font-size:14px; cursor:pointer; }
+            .save-btn:hover { background:#1d4ed8; }
+            .cancel-btn { flex:1; background:#fff; color:#374151; border:1px solid #e5e7eb; padding:10px; border-radius:6px; text-decoration:none; text-align:center; font-size:14px; }
+            .cancel-btn:hover { background:#f9fafb; }
+            </style>
+            </head>
+            <body>
+            <header>
+                <a href="/" class="logo">SQLite CRUD</a>
+                <nav>
+                    <a href="/">Home</a>
+                    <a href="/products">Products</a>
+                    <a href="/products/new">Add Product</a>
+                </nav>
+                <a href="/products" class="btn-primary">View Products</a>
+            </header>
+            <div class="container">
+                <h1 class="page-title">Update Product</h1>
+                <p class="subtitle">Modify an existing product record.</p>
+                <div class="form-box">
+                    <div class="product-id">Editing Product ID: ${id}</div>
+                    <form action="/products/${id}/update" method="POST">
+                        ${product}
+                        <div class="actions">
+                            <button type="submit" class="save-btn">Save Changes</button>
+                            <a href="/products" class="cancel-btn">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </body>
+            </html>
+            `
+        res.send(updatePage)
+    })
+})
+router.post('/:id/update', (req, res) => {
+    const productName = req.body.productName
+    const price = Number(req.body.price)
+    const id = Number(req.params.id)
+    const query = `UPDATE products SET productName = ?, price = ? WHERE productID = ${id}`
+    db.run(query, [productName, price], (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        }
         res.redirect('/products')
     })
 })
