@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
                 <td>
                 <div class="actions">
                     <a href="/products/${product.productID}/update" class="edit-btn">Edit</a>
-                    <a href="/delete/1" class="delete-btn">Delete</a>
+                    <a href="/products/${product.productID}/delete" class="delete-btn">Delete</a>
                     </div>
                 </td>
             </tr>
@@ -244,6 +244,96 @@ router.post('/:id/update', (req, res) => {
     db.run(query, [productName, price], (err) => {
         if (err) {
             console.log(err);
+            return res.status(500).send('Internal Server Error')
+        }
+        res.redirect('/products')
+    })
+})
+router.get('/:id/delete', (req, res) => {
+    const id = Number(req.params.id)
+    const query = `SELECT * FROM products WHERE productID = ${id}`
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        }
+        const product = rows.map(p => {
+            return `
+                <p><strong>ID:</strong> ${p.productID}</p>
+                <p><strong>Product:</strong> ${p.productName}</p>
+                <p><strong>Price:</strong> ${p.price}</p>
+            `
+        })
+        const deletePage = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Delete Product</title>
+            <style>
+            body { background:#f5f7fb; color:#1f2937; line-height:1.6; font-family:Arial,sans-serif; }
+            header { background:#fff; padding:15px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e5e7eb; position:sticky; top:0; }
+            .logo { font-weight:bold; font-size:18px; color:#2563eb; text-decoration:none; }
+            nav a { margin:0 10px; text-decoration:none; color:#1f2937; font-size:14px; }
+            nav a:hover { color:#2563eb; }
+            .btn-primary { background:#2563eb; color:#fff; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:13px; }
+            .container { max-width:600px; margin:50px auto; padding:0 20px; }
+            .page-title { font-size:24px; margin-bottom:5px; }
+            .subtitle { color:#6b7280; margin-bottom:20px; }
+            .confirm-box { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:30px; text-align:center; }
+            .warning-icon { font-size:48px; margin-bottom:15px; }
+            .product-info { background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:15px; margin:20px 0; text-align:left; }
+            .product-info p { margin:5px 0; }
+            .warning-text { color:#dc2626; font-size:14px; margin-top:15px; }
+            .actions { display:flex; gap:10px; margin-top:25px; }
+            .delete-btn { flex:1; background:#dc2626; color:#fff; border:none; padding:10px; border-radius:6px; font-size:14px; cursor:pointer; }
+            .delete-btn:hover { background:#b91c1c; }
+            .cancel-btn { flex:1; background:#fff; color:#374151; border:1px solid #e5e7eb; padding:10px; border-radius:6px; text-decoration:none; text-align:center; font-size:14px; }
+            .cancel-btn:hover { background:#f9fafb; }
+            </style>
+            </head>
+            <body>
+            <header>
+                <a href="/" class="logo">SQLite CRUD</a>
+                <nav>
+                    <a href="/">Home</a>
+                    <a href="/products">Products</a>
+                    <a href="/products/new">Add Product</a>
+                </nav>
+                <a href="/products" class="btn-primary">View Products</a>
+            </header>
+            <div class="container">
+                <h1 class="page-title">Delete Product</h1>
+                <p class="subtitle">Confirm product deletion.</p>
+                <div class="confirm-box">
+                    <div class="warning-icon">⚠️</div>
+                    <h2>Are you sure?</h2>
+                    <p>You are about to permanently delete this product.</p>
+                    <div class="product-info">
+                        ${product}
+                    </div>
+                    <p class="warning-text">This action cannot be undone.</p>
+                    <form action="/products/${id}/delete" method="POST">
+                        <div class="actions">
+                            <button type="submit" class="delete-btn">Delete Product</button>
+                            <a href="/products" class="cancel-btn">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </body>
+            </html>
+            `
+            res.send(deletePage)
+    })
+})
+router.post('/:id/delete', (req, res) => {
+    const id = Number(req.params.id)
+    const query = 'DELETE FROM products WHERE productID = ?'
+    db.run(query, [id], (err) => {
+        if (err) {
+            console.log(err)
             return res.status(500).send('Internal Server Error')
         }
         res.redirect('/products')
