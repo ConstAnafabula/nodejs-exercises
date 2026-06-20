@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
         <title>SQLite CRUD Manager</title>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+            html { scroll-behavior: smooth; }
             body { background: #f5f7fb; color: #1f2937; line-height: 1.6; }
             header { background: #ffffff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
             .logo { font-weight: bold; font-size: 18px; color: #2563eb; }
