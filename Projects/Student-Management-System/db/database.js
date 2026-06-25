@@ -1,5 +1,6 @@
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('./students.db')
+const path = require('path')
+const sqlite3 = require('sqlite3').verbose()
+const db = new sqlite3.Database(path.join(__dirname, '..', 'students.db'))
 
 db.run(`
     CREATE TABLE IF NOT EXISTS studentsInfo (
