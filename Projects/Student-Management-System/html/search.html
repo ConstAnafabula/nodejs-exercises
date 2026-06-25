@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Students</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --navy:        #0F1729;
+  --navy-mid:    #1E2D4D;
+  --navy-light:  #2A3F6F;
+  --indigo:      #4F46E5;
+  --indigo-dark: #3730A3;
+  --indigo-pale: #EEF2FF;
+  --green:       #10B981;
+  --green-pale:  #ECFDF5;
+  --amber:       #F59E0B;
+  --amber-pale:  #FFFBEB;
+  --rose:        #EF4444;
+  --rose-pale:   #FFF1F2;
+  --bg:          #F0F4FA;
+  --surface:     #FFFFFF;
+  --border:      #E2E8F0;
+  --text-primary:   #0F1729;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --shadow-sm:   0 1px 3px rgba(15,23,41,.06), 0 1px 2px rgba(15,23,41,.04);
+  --shadow-md:   0 4px 16px rgba(15,23,41,.08), 0 2px 6px rgba(15,23,41,.04);
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --transition:  all .2s cubic-bezier(.4,0,.2,1);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  color: white;
+  padding: 0 40px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(15,23,41,.4);
+}
+
+header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header h2::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--indigo), #818CF8);
+  border-radius: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(79,70,229,.5);
+}
+
+/* ── Container ────────────────────────────────────────────────── */
+.container {
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 32px 24px 56px;
+  flex: 1;
+  width: 100%;
+}
+
+/* ── Search Card ──────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+/* First card — search box */
+.card:first-of-type {
+  padding: 28px 32px;
+  animation: fadeUp .25s ease both;
+}
+
+.card:first-of-type h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+
+/* ── Search Form ──────────────────────────────────────────────── */
+.search-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+input[type="search"] {
+  flex: 1;
+  padding: 10px 16px 10px 40px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: .875rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+  outline: none;
+  transition: var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="search"]::placeholder {
+  color: var(--text-muted);
+}
+
+input[type="search"]:hover {
+  border-color: #CBD5E1;
+}
+
+input[type="search"]:focus {
+  border-color: var(--indigo);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+}
+
+/* Remove default search clear button */
+input[type="search"]::-webkit-search-cancel-button { display: none; }
+
+button {
+  background: var(--indigo);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: .8125rem;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(79,70,229,.25);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+button:hover {
+  background: var(--indigo-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(79,70,229,.4);
+}
+
+button:active { transform: translateY(0); }
+
+/* ── Results Card ─────────────────────────────────────────────── */
+.card:last-of-type {
+  padding: 24px 28px 8px;
+  animation: fadeUp .3s ease both .07s;
+}
+
+/* ── Result Count ─────────────────────────────────────────────── */
+.result-count {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-count::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--indigo);
+  border-radius: 50%;
+}
+
+/* ── Table ────────────────────────────────────────────────────── */
+.table-wrapper {
+  display: block;
+  overflow-x: auto;
+  margin: 0 -4px;
+}
+.hide {
+  display: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+thead tr {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: .6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--indigo-pale); }
+
+td {
+  padding: 13px 16px;
+  font-size: .8125rem;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+td:first-child {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .02em;
+}
+
+td:nth-child(2) {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.course-badge {
+  display: inline-block;
+  background: var(--indigo-pale);
+  color: var(--indigo);
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 3px 9px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+td:nth-child(5) {
+  color: var(--text-muted);
+  font-size: .8rem;
+}
+
+/* ── Row Actions ──────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.view, .edit, .delete {
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  transition: var(--transition);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.view   { background: var(--green-pale); color: var(--green); }
+.edit   { background: var(--amber-pale); color: var(--amber); }
+.delete { background: var(--rose-pale);  color: var(--rose);  }
+
+.view:hover   { background: var(--green); color: white; box-shadow: 0 2px 8px rgba(16,185,129,.3); }
+.edit:hover   { background: var(--amber); color: white; box-shadow: 0 2px 8px rgba(245,158,11,.3); }
+.delete:hover { background: var(--rose);  color: white; box-shadow: 0 2px 8px rgba(239,68,68,.3);  }
+
+/* ── Empty State ──────────────────────────────────────────────── */
+.empty {
+  display: none;
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--text-muted);
+}
+.show {
+  display: block;
+}
+
+.empty::before {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  background: var(--bg);
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.empty p {
+  font-size: .9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.empty span {
+  font-size: .8125rem;
+  color: var(--text-muted);
+}
+
+/* ── Animation ────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  header {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  header h2 { font-size: .9375rem; }
+
+  .container {
+    padding: 20px 16px 40px;
+  }
+
+  .card:first-of-type {
+    padding: 20px;
+  }
+
+  .card:first-of-type h1 {
+    font-size: 1.25rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    justify-content: center;
+  }
+
+  .card:last-of-type {
+    padding: 18px 16px 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .view, .edit, .delete {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Student Management System</h2>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h1>Search Students</h1>
+    <form action="/students/search" method="GET" class="search-form">
+      <input
+        type="search"
+        name="q"
+        id="search"
+        placeholder="Search by Student ID, Name, Course..."
+        required
+      >
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="card">
+
+    <p class="result-count" id="count">Found 0 student(s)</p>
+
+    <div class="table-wrapper hide">
+      <table>
+
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Year Level</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+    
+        </tbody>
+
+      </table>
+    </div>
+
+    <div class="empty show">
+      <p>No students found.</p>
+      <span>Try searching with a different name, ID, or course.</span>
+    </div>
+    
+
+  </div>
+
+</div>
+
+</body>
+<script>
+  document.querySelector('.search-form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    const search = document.getElementById('search').value
+
+    fetch(`/students/find?q=${encodeURIComponent(search)}`).then(res => res.json()).then(data => {
+      const students = data.rows
+      const total = data.total
+      const table = document.querySelector('.table-wrapper')
+      const empty = document.querySelector('.empty')
+      const count = document.getElementById('count')
+      const tbody = document.querySelector('tbody')
+
+      const student = students.map(s => {
+        return`
+          <tr>
+            <td>${s.studentID}</td>
+            <td>${s.firstName} ${s.lastName}</td>
+            <td><span class="course-badge">${s.course}</span></td>
+            <td>${s.yearLvl}</td>
+            <td>${s.email}</td>
+            <td>
+              <div class="actions">
+                <a href="/students/${s.studentID}" class="view">View</a>
+                <a href="/students/${s.studentID}/edit" class="edit">Edit</a>
+                <a href="/students/${s.studentID}/delete" class="delete">Delete</a>
+              </div>
+            </td>
+          </tr>
+        `
+      }).join('')
+      if (total > 0) {
+        count.textContent = `Found ${total} student(s)`
+        empty.classList.remove('show');
+        table.classList.remove('hide')
+        tbody.innerHTML = student
+      } else {
+        count.textContent = `Found 0 student(s)`;
+        empty.classList.add('show')
+        table.classList.add('hide') 
+      }
+    })
+  })
+</script>
+</html>
