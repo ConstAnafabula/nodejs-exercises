@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Student</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --navy:        #0F1729;
+  --navy-mid:    #1E2D4D;
+  --navy-light:  #2A3F6F;
+  --indigo:      #4F46E5;
+  --indigo-dark: #3730A3;
+  --indigo-pale: #EEF2FF;
+  --green:       #10B981;
+  --green-pale:  #ECFDF5;
+  --amber:       #F59E0B;
+  --amber-pale:  #FFFBEB;
+  --rose:        #EF4444;
+  --rose-pale:   #FFF1F2;
+  --bg:          #F0F4FA;
+  --surface:     #FFFFFF;
+  --border:      #E2E8F0;
+  --text-primary:   #0F1729;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --shadow-sm:   0 1px 3px rgba(15,23,41,.06), 0 1px 2px rgba(15,23,41,.04);
+  --shadow-md:   0 4px 16px rgba(15,23,41,.08), 0 2px 6px rgba(15,23,41,.04);
+  --shadow-lg:   0 8px 32px rgba(15,23,41,.12), 0 4px 12px rgba(15,23,41,.06);
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --transition:  all .2s cubic-bezier(.4,0,.2,1);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  color: white;
+  padding: 0 40px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(15,23,41,.4);
+}
+
+header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header h2::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--indigo), #818CF8);
+  border-radius: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(79,70,229,.5);
+}
+
+/* ── Container ────────────────────────────────────────────────── */
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 36px 24px 56px;
+  flex: 1;
+  width: 100%;
+}
+
+/* ── Page title row ───────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  animation: fadeUp .25s ease both;
+}
+
+.page-header-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), #818CF8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -.5px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(79,70,229,.35);
+}
+
+.page-header-text h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.page-header-text p {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  padding: 36px 40px 32px;
+  animation: fadeUp .3s ease both .05s;
+}
+
+/* ── Form sections ────────────────────────────────────────────── */
+.form-section {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-section-label {
+  font-size: .6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+/* ── Two-column grid ──────────────────────────────────────────── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Form Group ───────────────────────────────────────────────── */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group:last-child { margin-bottom: 0; }
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: .01em;
+}
+
+label .required {
+  color: var(--rose);
+  margin-left: 2px;
+}
+
+/* ── Inputs / Selects / Textarea ──────────────────────────────── */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: .875rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  transition: var(--transition);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #CBD5E1;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+  background: var(--indigo-pale);
+}
+
+input[type="date"] { color: var(--text-secondary); }
+
+/* Read-only Student ID */
+input[readonly] {
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: .8125rem;
+  letter-spacing: .04em;
+}
+
+input[readonly]:focus {
+  border-color: var(--border);
+  box-shadow: none;
+  background: var(--bg);
+}
+
+/* Custom select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234F46E5' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+}
+
+/* ── Helper text ──────────────────────────────────────────────── */
+.field-hint {
+  font-size: .75rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ── Actions ──────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+/* Save — primary indigo */
+button[type="submit"] {
+  background: var(--indigo);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: .8125rem;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(79,70,229,.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button[type="submit"]::before {
+  content: '✓';
+  font-size: .875rem;
+}
+
+button[type="submit"]:hover {
+  background: var(--indigo-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(79,70,229,.4);
+}
+
+button[type="submit"]:active { transform: translateY(0); }
+
+/* Cancel — ghost */
+.btn-cancel {
+  text-decoration: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.btn-cancel::before { content: '←'; font-size: .875rem; }
+
+.btn-cancel:hover {
+  background: var(--bg);
+  color: var(--text-primary);
+  border-color: #CBD5E1;
+}
+
+/* Delete — rose ghost, pushed to the right */
+.btn-delete {
+  text-decoration: none;
+  background: var(--rose-pale);
+  color: var(--rose);
+  border: 1.5px solid transparent;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-size: .8125rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  margin-left: auto;
+}
+
+.btn-delete:hover {
+  background: var(--rose);
+  color: white;
+  box-shadow: 0 2px 10px rgba(239,68,68,.35);
+  transform: translateY(-1px);
+}
+
+.btn-delete:active { transform: translateY(0); }
+
+/* ── Animation ────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  header {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  header h2 { font-size: .9375rem; }
+
+  .container {
+    padding: 20px 16px 40px;
+  }
+
+  .card {
+    padding: 24px 20px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header-text h1 { font-size: 1.25rem; }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn-delete { margin-left: 0; }
+
+  button[type="submit"],
+  .btn-cancel,
+  .btn-delete {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Student Management System</h2>
+</header>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="page-header-avatar" id="initial"></div>
+    <div class="page-header-text">
+      <h1>Edit Student</h1>
+      <p id="editPageSubtitle"></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <form id="editStudentForm">
+      <!-- Personal Information -->
+      <div class="form-section">
+        <p class="form-section-label">Personal Information</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" placeholder="Enter first name" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" placeholder="Enter last name" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthDate">Birth Date</label>
+            <input type="date" id="birthDate" name="birthDate">
+          </div>
+          <div class="form-group">
+            <label for="contactNumber">Contact Number</label>
+            <input type="tel" id="contactNumber" name="contactNumber" placeholder="Enter contact number">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" name="address" placeholder="Enter address"></textarea>
+        </div>
+      </div>
+
+      <!-- Academic Information -->
+      <div class="form-section">
+        <p class="form-section-label">Academic Information</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="studentId">Student ID</label>
+            <input type="text" id="studentId" name="studentId" readonly>
+            <p class="field-hint">Student ID cannot be changed.</p>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address <span class="required">*</span></label>
+            <input type="email" id="email" name="email" placeholder="Enter email" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="course">Course <span class="required">*</span></label>
+            <select id="course" name="course" required>
+              <option value="">Select Course</option>
+              <option value="BSIT">BSIT</option>
+              <option value="BSCS">BSCS</option>
+              <option value="BSBA">BSBA</option>
+              <option value="BSEd">BSEd</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="yearLevel">Year Level <span class="required">*</span></label>
+            <select id="yearLevel" name="yearLevel" required>
+              <option value="">Select Year</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="status">Status <span class="required">*</span></label>
+            <select id="status" name="status" required>
+              <option value="">Select Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Graduated">Graduated</option>
+              <option value="Dropped">Dropped</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</body>
+<script>
+    const firstName = document.getElementById('firstName')
+    const lastName = document.getElementById('lastName')
+    const birthDate = document.getElementById('birthDate')
+    const contactNumber = document.getElementById('contactNumber')
+    const address = document.getElementById('address')
+    const studentID = document.getElementById('studentId')
+    const email = document.getElementById('email')
+    const course = document.getElementById('course')
+    const yearLevel = document.getElementById('yearLevel')
+    const status = document.getElementById('status')
+
+    const id = window.location.pathname.split('/')[2]
+    fetch(`/students/${id}/update`).then(res => res.json()).then(data => {    
+        const initial = data.firstName[0] + data.lastName[0]
+        document.getElementById('initial').textContent = initial
+        document.getElementById('editPageSubtitle').textContent = `Updating record for ${data.firstName} ${data.lastName} · ID ${data.studentID}`
+        firstName.value = data.firstName
+        lastName.value = data.lastName
+        birthDate.value = data.birthday
+        contactNumber.value = data.contactNumber
+        address.value = data.address
+        studentID.value = data.studentID
+        email.value = data.email
+        course.value = data.course
+        yearLevel.value = data.yearLvl
+        status.value = data.studentStatus
+        const button = 
+            `
+            <button type="submit">Save Changes</button>
+            <a href="/students/${id}" class="btn-cancel">Cancel</a>
+            <a href="/students/${id}/delete" class="btn-delete">Delete Student</a>
+            `
+        document.querySelector('.actions').innerHTML = button
+    })
+    document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        const data = {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            birthDate: birthDate.value,
+            contactNumber: contactNumber.value,
+            address: address.value,
+            studentID: studentID.value,
+            email: email.value,
+            course: course.value,
+            yearLevel: yearLevel.value,
+            status: status.value
+        }
+        const response = await fetch(`/students/${id}/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        if (response.ok) {
+            window.location.href = `/students/${id}`
+        }
+    })
+</script>
+</html>
